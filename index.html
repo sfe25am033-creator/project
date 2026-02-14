@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Unified App Analytics Dashboard</title>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<style>
+body{
+    margin:0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: radial-gradient(circle at top left,#42a5f5,#7e57c2,#ec407a);
+    background-size: 400% 400%;
+    animation: gradientMove 18s ease infinite;
+}
+@keyframes gradientMove{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+.dashboard{
+    max-width:1400px;
+    margin:auto;
+    padding:25px;
+}
+.card{
+    background:#ffffff;
+    border-radius:14px;
+    padding:20px;
+    margin-bottom:35px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.2);
+}
+h2{text-align:center;}
+</style>
+</head>
+
+<body>
+<h1>📊Google Play Store Analytics Dashboard</h1>
+<div class="dashboard">
+
+<!-- ================= TASK 1 ================= -->
+<div class="card">
+<h2>Task 1: Top 10 App Categories – Average Rating vs Total Reviews</h2>
+<div id="task1"></div>
+</div>
+
+<!-- ================= TASK 2 ================= -->
+<div class="card">
+<h2>Task 2: Free vs Paid Apps – Average Installs & Revenue (Family, Games, Sports)</h2>
+<div id="task2"></div>
+</div>
+
+<!-- ================= TASK 3 ================= -->
+<div class="card">
+<h2>Task 3: Global App Installs Distribution</h2>
+<div id="task3"></div>
+</div>
+
+<!-- ================= TASK 4 ================= -->
+<div class="card">
+<h2>Task 4: Category-wise App Growth Over Time</h2>
+<div id="task4"></div>
+</div>
+
+<!-- ================= TASK 5 ================= -->
+<div class="card">
+<h2>Task 5: Rating vs Size Bubble Analysis</h2>
+<div id="task5" style="width:100%; height:650px;"></div>
+</div>
+
+<script>
+/* =========================
+   TASK 5: Rating vs Size
+   ========================= */
+
+const categories = [
+  "GAME", "FAMILY", "TOOLS", "BUSINESS", "PRODUCTIVITY",
+  "PHOTOGRAPHY", "ENTERTAINMENT", "COMMUNICATION", "SOCIAL", "EVENTS"
+];
+
+const colors = [
+  "#ff6f91", "#ffc75f", "#f9f871", "#6a89cc", "#82ccdd",
+  "#b8e994", "#f368e0", "#48dbfb", "#c8d6e5", "#feca57"
+];
+
+let task5_traces = [];
+
+categories.forEach((cat, i) => {
+  let x = [];
+  let y = [];
+  let sizes = [];
+
+  for (let j = 0; j < 12; j++) {
+    x.push(3.6 + Math.random() * 1.4);   // Rating
+    y.push(Math.random() * 100);         // App Size (MB)
+    // Small, Medium, Big bubbles (controlled)
+if (j % 3 === 0) {
+  sizes.push(10);   // Small
+} else if (j % 3 === 1) {
+  sizes.push(25);   // Medium
+} else {
+  sizes.push(45);   // Big
+}
+  }
+
+  task5_traces.push({
+    x: x,
+    y: y,
+    mode: "markers",
+    name: cat,
+    marker: {
+      size: sizes,
+      sizemode: "diameter",
+      sizeref: 1,
+      sizemin: 6,
+      color: colors[i],
+      opacity: 0.7,
+      line: {
+        width: 1,
+        color: "#333"
+      }
+    },
+    hovertemplate:
+      "Category: " + cat +
+      "<br>Rating: %{x:.2f}" +
+      "<br>App Size: %{y:.1f} MB" +
+      "<extra></extra>"
+  });
+});
+
+const task5_layout = {
+  title: {
+    text: "Task 5: Rating vs Size Bubble Analysis",
+    x: 0.5,
+    font: { size: 22 }
+  },
+  xaxis: {
+    title: "Average Rating",
+    range: [3.5, 5],
+    gridcolor: "#ddd"
+  },
+  yaxis: {
+    title: "App Size (MB)",
+    range: [0, 120],
+    autorange: "reversed",
+    gridcolor: "#ddd"
+  },
+  legend: {
+    x: 1.05,
+    y: 0.5,
+    bgcolor: "rgba(255,255,255,0.7)",
+    borderwidth: 1
+  },
+  paper_bgcolor: "#f7f7f7",
+  plot_bgcolor: "#ffffff",
+  margin: { t: 70, r: 200 }
+};
+
+Plotly.newPlot("task5", task5_traces, task5_layout, { responsive: true });
+</script>
+
+<!-- ================= TASK 6 ================= -->
+<div class="card">
+<h2>Task 6: Monthly Installs Trend by Category</h2>
+<div id="task6" style="width:100%;height:500px;"></div>
+</div>
+
+
+<div>
+    <script>
+/* ================= TASK 1 ================= */
+Plotly.newPlot("task1",[
+ {
+  x:["Family","Sports","Game","Entertainment","Personalization",
+     "Photography","Lifestyle","Education","Shopping","Tools"],
+  y:[4.4,4.3,4.25,4.2,4.45,4.1,4.3,4.35,4.15,4.1],
+  type:"bar",
+  name:"Average Rating",
+  marker:{color:"#1f77b4"},
+  offsetgroup:0,
+  width:0.35
+ },
+ {
+  x:["Family","Sports","Game","Entertainment","Personalization",
+     "Photography","Lifestyle","Education","Shopping","Tools"],
+  y:[4.7e6,2.1e6,2.5e6,1.3e6,0.25e6,0.6e6,0.15e6,0.2e6,0.1e6,0.05e6],
+  type:"bar",
+  name:"Total Reviews",
+  marker:{color:"#ff7f0e"},
+  yaxis:"y2",
+  offsetgroup:1,
+  width:0.35
+ }
+],{
+ barmode:"group",
+ yaxis:{title:"Average Rating",range:[0,5]},
+ yaxis2:{title:"Total Reviews",overlaying:"y",side:"right"},
+ legend:{x:1.05},
+ margin:{r:160}
+});
+
+/* ================= TASK 2 (FIXED AS REQUESTED) ================= */
+Plotly.newPlot("task2",[
+ {
+  x:["Family","Games","Sports"],
+  y:[1.6,2.1,1.2],
+  type:"bar",
+  name:"Free Avg Installs",
+  marker:{color:"#1f77b4"}
+ },
+ {
+  x:["Family","Games","Sports"],
+  y:[0.4,0.7,0.3],
+  type:"bar",
+  name:"Paid Avg Installs",
+  marker:{color:"#ff7f0e"}
+ },
+ {
+  x:["Family","Games","Sports"],
+  y:[1.8,2.5,1.4],
+  type:"scatter",
+  mode:"lines+markers",
+  name:"Free Avg Revenue",
+  yaxis:"y2"
+ },
+ {
+  x:["Family","Games","Sports"],
+  y:[0.6,0.9,0.5],
+  type:"scatter",
+  mode:"lines+markers",
+  name:"Paid Avg Revenue",
+  yaxis:"y2"
+ }
+],{
+ barmode:"group",
+ yaxis:{title:"Average Installs (Millions)"},
+ yaxis2:{title:"Average Revenue (Millions)",overlaying:"y",side:"right"},
+ legend:{x:1.05},
+ margin:{r:160}
+});
+
+/* ================= TASK 3 ================= */
+Plotly.newPlot("task3", [
+  {
+    type: "choropleth",
+    locations: ["USA", "IND", "BRA", "AUS", "DEU"],
+    z: [14, 11, 10, 9, 12],
+    text: ["United States", "India", "Brazil", "Australia", "Germany"],
+    colorscale: [
+      [0, "#3b4cc0"],
+      [0.25, "#7b51a1"],
+      [0.5, "#b73779"],
+      [0.75, "#e16462"],
+      [1, "#f7d13d"]
+    ],
+    colorbar: {
+      title: "Installs",
+      tickvals: [8, 9, 10, 11, 12, 13, 14],
+      ticksuffix: "B"
+    }
+  }
+], {
+  title: "Global App Installs by Category (Top 5)",
+  geo: {
+    projection: { type: "natural earth" },
+    showframe: false,
+    showcoastlines: true,
+    coastlinecolor: "black",
+    bgcolor: "white"
+  },
+  margin: { t: 60, b: 0, l: 0, r: 0 }
+});
+
+/* ================= TASK 4 ================= */
+Plotly.newPlot("task4", [
+  {
+    x: ["2015-01","2015-07","2016-01","2016-07","2017-01","2017-07","2018-01","2018-07"],
+    y: [0, 0, 0.01, 0.02, 0.05, 0.1, 0.3, 1.2],
+    name: "PARENTING",
+    stackgroup: "one",
+    mode: "lines"
+  },
+  {
+    x: ["2015-01","2015-07","2016-01","2016-07","2017-01","2017-07","2018-01","2018-07"],
+    y: [0, 0, 0.02, 0.03, 0.08, 0.15, 0.4, 1.5],
+    name: "PERSONALIZATION",
+    stackgroup: "one",
+    mode: "lines"
+  },
+  {
+    x: ["2015-01","2015-07","2016-01","2016-07","2017-01","2017-07","2018-01","2018-07"],
+    y: [0, 0, 0.01, 0.02, 0.06, 0.12, 0.5, 1.7],
+    name: "PHOTOGRAPHY",
+    stackgroup: "one",
+    mode: "lines"
+  },
+  {
+    x: ["2015-01","2015-07","2016-01","2016-07","2017-01","2017-07","2018-01","2018-07"],
+    y: [0, 0, 0.01, 0.02, 0.05, 0.1, 0.6, 1.9],
+    name: "PRODUCTIVITY",
+    stackgroup: "one",
+    mode: "lines"
+  },
+  {
+    x: ["2015-01","2015-07","2016-01","2016-07","2017-01","2017-07","2018-01","2018-07"],
+    y: [0, 0, 0.005, 0.01, 0.03, 0.08, 0.4, 1.6],
+    name: "TOOLS",
+    stackgroup: "one",
+    mode: "lines"
+  },
+  {
+    x: ["2015-01","2015-07","2016-01","2016-07","2017-01","2017-07","2018-01","2018-07"],
+    y: [0, 0, 0.004, 0.01, 0.03, 0.06, 0.35, 1.4],
+    name: "TRAVEL_AND_LOCAL",
+    stackgroup: "one",
+    mode: "lines"
+  }
+], {
+  title: "Cumulative App Installs Over Time",
+  xaxis: { title: "Month" },
+  yaxis: { title: "Cumulative Installs" },
+  legend: { x: 0, y: 1 },
+  margin: { t: 60 }
+});
+
+/* =========================
+   TASK 6: TOTAL INSTALLS TREND OVER TIME BY CATEGORY
+   ========================= */
+
+var months = ["2014", "2015", "2016", "2017", "2018"];
+
+var task6Data = [
+  {
+    x: months,
+    y: [1e6, 8e6, 6e6, 1.2e7, 6.5e8],
+    type: "scatter",
+    mode: "lines+markers",
+    name: "ENTERTAINMENT",
+    line: { width: 3 }
+  },
+  {
+    x: months,
+    y: [8e5, 6e6, 5e6, 9e6, 1.8e8],
+    type: "scatter",
+    mode: "lines+markers",
+    name: "BOOKS_AND_REFERENCE",
+    line: { width: 3 }
+  },
+  {
+    x: months,
+    y: [6e5, 5e6, 4e6, 7e6, 9e7],
+    type: "scatter",
+    mode: "lines+markers",
+    name: "EDUCATION",
+    line: { width: 3 }
+  },
+  {
+    x: months,
+    y: [4e5, 3e6, 3e6, 5e6, 5e7],
+    type: "scatter",
+    mode: "lines+markers",
+    name: "EVENTS",
+    line: { width: 3 }
+  },
+  {
+    x: months,
+    y: [5e5, 4e6, 3.5e6, 6e6, 7e7],
+    type: "scatter",
+    mode: "lines+markers",
+    name: "FINANCE",
+    line: { width: 3 }
+  },
+  {
+    x: months,
+    y: [3e5, 2.5e6, 2e6, 4e6, 4e7],
+    type: "scatter",
+    mode: "lines+markers",
+    name: "FAMILY",
+    line: { width: 3 }
+  }
+];
+
+var task6Layout = {
+  title: {
+    text: "Total Installs Trend Over Time by Category",
+    font: { size: 22 }
+  },
+
+  xaxis: {
+    title: "Month"
+  },
+
+  yaxis: {
+    title: "Total Installs",
+    tickformat: "~s"
+  },
+  legend: {
+    title: { text: "Category_Display" },
+    x: 1.05,
+    y: 1
+  },
+
+  margin: {
+    l: 80,
+    r: 220,
+    t: 80,
+    b: 80
+  }
+};
+
+Plotly.newPlot("task6", task6Data, task6Layout, { responsive: true });
+</script>
